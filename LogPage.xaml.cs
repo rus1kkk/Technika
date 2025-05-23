@@ -17,17 +17,30 @@ namespace Technika
             this.Close();
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        private void LogButton_Click(object sender, RoutedEventArgs e)
         {
-            string username = UsernameTextBox.Text; // Убедитесь, что это имя совпадает с XAML
-            string password = PasswordBox.Password; // Убедитесь, что это имя совпадает с XAML
+            string username = UsernameTextBox.Text;
+            string password = PasswordBox.Password;
 
-            // Здесь можно добавить код для проверки пользователя
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                MessageBox.Show("Пожалуйста, заполните все поля.");
+                return;
+            }
 
-            MessageBox.Show("Авторизация успешна!");
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
-            this.Close();
+            bool isValid = DatabaseHelper.CheckUser(username, password);
+            if (isValid)
+            {
+                MessageBox.Show("Авторизация успешна!");
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.SetCurrentUser(username);
+                mainWindow.Show();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Неверный логин или пароль.");
+            }
         }
     }
 }

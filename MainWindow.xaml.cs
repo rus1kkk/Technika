@@ -20,10 +20,52 @@ namespace Technika
     /// </summary>
     public partial class MainWindow : Window
     {
+            private string currentUser = null;
+
         public MainWindow()
         {
             InitializeComponent();
+            RootGrid.Opacity = 0;
+            var sb = (System.Windows.Media.Animation.Storyboard)this.Resources["WindowShowAnimation"];
+            sb.Begin(RootGrid);
+            DatabaseHelper.InitializeDatabase();
+
+            // Проверяем, что таблица создана
+            if (!DatabaseHelper.TableExists("Users"))
+            {
+                MessageBox.Show("Ошибка: таблица Users не существует!");
+            }
+
+            CartButton.Visibility = Visibility.Collapsed;
+            UserNameText.Visibility = Visibility.Collapsed;
         }
+
+        public MainWindow(string username) : this()
+        {
+            SetCurrentUser(username);
+        }
+
+        public void SetCurrentUser(string username)
+    {
+        currentUser = username;
+        if (!string.IsNullOrEmpty(username))
+        {
+            UserNameText.Text = $"Пользователь: {username}";
+            UserNameText.Visibility = Visibility.Visible;
+            CartButton.Visibility = Visibility.Visible;
+            RegisterButton.Visibility = Visibility.Collapsed;
+            LoginButton.Visibility = Visibility.Collapsed;
+            LogoutButton.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            UserNameText.Visibility = Visibility.Collapsed;
+            CartButton.Visibility = Visibility.Collapsed;
+            RegisterButton.Visibility = Visibility.Visible;
+            LoginButton.Visibility = Visibility.Visible;
+            LogoutButton.Visibility = Visibility.Collapsed;
+        }
+    }
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
@@ -35,7 +77,7 @@ namespace Technika
 
         private void ProductsButton_Click(object sender, RoutedEventArgs e)
         {
-            ProductsPage productsPage = new ProductsPage();
+            ProductsPage productsPage = new ProductsPage(currentUser);
             productsPage.Show();
             this.Close();
         }
@@ -50,29 +92,14 @@ namespace Technika
 
         private void CartButton_Click(object sender, RoutedEventArgs e)
         {
-            // Открыть страницу корзины
-            CartPage cartPage = new CartPage();
+            CartPage cartPage = new CartPage(currentUser);
             cartPage.Show();
             this.Close();
         }
-    }
 
-    public partial class LogPage : Window
-    {
-
-        private void LogButton_Click(object sender, RoutedEventArgs e)
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
-            // Логика авторизации пользователя
-            string username = UsernameTextBox.Text;
-            string password = PasswordBox.Password;
-
-            // Здесь можно добавить код для проверки пользователя
-
-            MessageBox.Show("Авторизация успешна!");
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
-            this.Close();
+            SetCurrentUser(null); // Сброс авторизации
         }
     }
-
 }

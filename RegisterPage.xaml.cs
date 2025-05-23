@@ -21,12 +21,24 @@ namespace Technika
             string username = UsernameTextBox.Text;
             string password = PasswordBox.Password;
 
-            // Здесь можно добавить код для сохранения пользователя
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                MessageBox.Show("Пожалуйста, заполните все поля.");
+                return;
+            }
 
-            MessageBox.Show("Регистрация успешна!");
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
-            this.Close();
+            bool success = DatabaseHelper.RegisterUser(username, password);
+            if (success)
+            {
+                MessageBox.Show("Регистрация прошла успешно!");
+                LogPage logPage = new LogPage();
+                logPage.Show();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Пользователь с таким именем уже существует.");
+            }
         }
     }
 }

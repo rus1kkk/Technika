@@ -1,27 +1,19 @@
 ﻿using System.Windows;
+using Technika.ViewModels;
 
 namespace Technika
 {
     public partial class CartPage : Window
     {
-        public CartPage()
+        public CartPage(string username)
         {
             InitializeComponent();
-            // Здесь можно добавить код для загрузки товаров в корзину
+            DataContext = new CartViewModel(username);
+            RootGrid.Opacity = 0;
+            var sb = (System.Windows.Media.Animation.Storyboard)this.Resources["WindowShowAnimation"];
+            sb.Begin(RootGrid);
         }
 
-        private void HomeButton_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
-            this.Close();
-        }
-
-        private void CheckoutButton_Click(object sender, RoutedEventArgs e)
-        {
-            CheckoutPage checkoutPage = new CheckoutPage();
-            checkoutPage.Show();
-            this.Close();
-        }
+        public CartPage() : this(null) { }
     }
 }
